@@ -8,10 +8,7 @@
     "watchenv": "nodemon --watch .env --watch ./confenv/.env ./bin/www",
     "test": "mocha ./test/*.js ./pubmodules/**/test/*.js ./modules/**/test/*.js ./channels/*/test/*.js ./node_modules/@tiledesk-ent/**/test/*.js  --exit",
     "test:int": "mocha ./test-int/*.js  ./pubmodules/**/test-int/*.js ./modules/**/test-int/*.js ./channels/**/test-int/*.js --exit",
-    "posttest": "mongodb-runner stop",
-    "preinstall": "if [ $ENABLE_ENTERPRISE_MODULE ]; then npm run enable-ent; fi",
-    "heroku-prebuild": "if [ $ENABLE_ENTERPRISE_MODULE ]; then npm run enable-ent; fi",
-    "enable-ent": "echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc"
+    "posttest": "mongodb-runner stop"
   },
   "private": false,
   "author": "Andrea Leo - Tiledesk SRL",
@@ -24,6 +21,9 @@
   "engines": {
     "node": "16.17.0",
     "npm": "8.15.0"
+  },
+  "volta": {
+    "node": "16.20.2"
   },
   "bin": {
     "tiledesk-server": "./bin/www"
