@@ -1847,7 +1847,10 @@ router.post('/user-input-requests/csv', function (req, res, next) {
     .join("\n");
 
   winston.debug('REQUEST ROUTE - REQUEST AS CSV', requests);
-  fs.writeFileSync('./public/user-input-results.csv', requests, { unicode: 'utf8' });
+  const date = new Date();
+  const filename = 'user-input-results' + (date.getMonth() +1) + date.getDate() + '.csv';
+  console.log('./public' + filename);
+  fs.writeFileSync('./public/' + filename, requests, { unicode: 'utf8' });
   return res.csv({ requests }, true);
 });
 
