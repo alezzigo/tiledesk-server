@@ -1589,6 +1589,7 @@ router.get('/user-input-results', function (req, res, next) {
         })
         )
       };
+
       winston.debug('REQUEST ROUTE - objectToReturn ');
       winston.debug('REQUEST ROUTE - objectToReturn ', objectToReturn);
 
@@ -1828,29 +1829,42 @@ router.get('/csv', function (req, res, next) {
 
 });
 
-// TODO converti con fast-csv e stream
-// DOWNLOAD HISTORY REQUESTS AS CSV
-router.post('/user-input-requests/csv', function (req, res, next) {
+// EXPORT HISTORY REQUESTS AS CSV
+router.post('/user-input-requests/csv', function (req, res) {
 
   winston.debug("req projectid", req.projectid);
 
   const userInputRequests = Array.isArray(req.body?.userInputRequests) ? req.body.userInputRequests : [];
+
   if (userInputRequests.length < 1) {
     return res.csv({}, true);
   }
 
-  const headerCols = Object.keys(userInputRequests[0]).filter(k => k.includes('user'))
-  const requests = [headerCols, ...userInputRequests.filter(r => r).map(item => {
-    const arr = headerCols.map(h => item[h]);
-    return arr;
-  })].map(e => e.join(","))
-    .join("\n");
+  // const headerCols = Object.keys(userInputRequests[0]).filter(k => k.includes('user'))
 
+  // const requests = [headerCols, ...userInputRequests.filter(r => r).map(item => {
+  //   const arr = headerCols.map(h => item[h]);
+  //   return arr;
+  // })].map(e => e.join(","))
+  //   .join("\n");
+
+  const requests = userInputRequests.filter(r => r).map(item => {
+    const headerCols = Object.keys(item).filter(k => k.includes('user'));
+    const bodyCols = headerCols.map(h => item[h]);
+    return { content: `${headerCols.join(',')}\n ${bodyCols.join(',')}`, name: item?.userPhone ?? 'na' }
+  })
+
+ 
+  requests.map(r => {
+    const date = new Date();
+    const filename = 'form-' + r.name + '-' + (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getMinutes() + '.csv';
+    fs.writeFileSync('./logs/' + filename, r.content, { unicode: 'utf8' });
+  })
   winston.debug('REQUEST ROUTE - REQUEST AS CSV', requests);
-  const date = new Date();
-  const filename = 'user-input-results-' + (date.getMonth() + 1) + '-'+ date.getDate() + '-'+ date.getMinutes() + '.csv';
-  fs.writeFileSync('./logs/' + filename, requests, { unicode: 'utf8' });
-  return res.csv({ requests }, true);
+  // const date = new Date();
+  // const filename = 'user-input-results-' + (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getMinutes() + '.csv';
+  // fs.writeFileSync('./logs/' + filename, requests, { unicode: 'utf8' });
+  return res.json({ statusCode: 200 });
 });
 
 router.get('/:requestid', function (req, res) {
