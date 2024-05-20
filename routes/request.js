@@ -1851,7 +1851,7 @@ router.post('/user-input-requests/csv', function (req, res) {
   const requests = userInputRequests.filter(r => r).map(item => {
     const headerCols = Object.keys(item).filter(k => k.includes('user'));
     const bodyCols = headerCols.map(h => item[h]);
-    return { content: `${headerCols.join(',')}\n ${bodyCols.join(',')}`, name: item?.userPhone ?? 'na' }
+    return { content: `${headerCols.join(',')}\n ${bodyCols.join(',')}`, name: item?.userLeadId ?? item?.userPhone ?? 'na' }
   })
 
  
