@@ -1848,9 +1848,8 @@ router.post('/user-input-requests/csv', function (req, res, next) {
 
   winston.debug('REQUEST ROUTE - REQUEST AS CSV', requests);
   const date = new Date();
-  const filename = 'user-input-results' + (date.getMonth() +1) + date.getDate() + '.csv';
-  console.log('./public' + filename);
-  fs.writeFileSync('./public/' + filename, requests, { unicode: 'utf8' });
+  const filename = 'user-input-results-' + (date.getMonth() + 1) + '-'+ date.getDate() + '-'+ date.getMinutes() + '.csv';
+  fs.writeFileSync('./logs/' + filename, requests, { unicode: 'utf8' });
   return res.csv({ requests }, true);
 });
 
