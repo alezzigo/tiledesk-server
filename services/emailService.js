@@ -162,7 +162,7 @@ class EmailService {
         return new Promise(function (resolve, reject) {
           return resolve(template);
         });
-      } 
+      }
       // else {
       //   return that.readTemplateFile(templateName);
       // }
@@ -179,7 +179,7 @@ class EmailService {
 
         return that.readTemplateFile(templateName);
       }
-      
+
     }
   }
   readTemplateFile(templateName) {
@@ -219,12 +219,6 @@ class EmailService {
 
     let transport = {
       host: configEmail.host,
-      port: configEmail.port, // defaults to 587 if is secure is false or 465 if true
-      secure: configEmail.secure,
-      auth: {
-        user: configEmail.user,
-        pass: configEmail.pass
-      },
       // secureConnection: false,
       // tls:{
       //   ciphers:'SSLv3'
@@ -243,7 +237,19 @@ class EmailService {
       //   cacheDir: "/tmp",
       //   cacheTreshold: 100 * 1024
       // }
-    };
+    }
+
+    if (configEmail.port) {
+      transport.port = configEmail.port
+    }
+
+    if (configEmail.user && configEmail.pass) {
+      transport.auth = {
+        user: configEmail.user,
+        pass: configEmail.pass
+      }
+    }
+
 
     winston.debug("getTransport transport: ", transport);
 
@@ -301,10 +307,13 @@ class EmailService {
       sender: mail.sender
     };
 
-    winston.debug('mailOptions', mailOptions);
-    winston.debug(' mail.config', mail.config);
+    winston.debug('mailOptions', {
+      form: mailOptions.from,
+      to: mailOptions.to,
+      sender: mailOptions.sender,
+    });
 
-    if (!mail.to) {
+    if (typeof mailOptions.to !== 'string') {
       return winston.warn("EmailService send method. to field is not defined", mailOptions);
     }
 
@@ -314,7 +323,7 @@ class EmailService {
         if (mail.callback) {
           mail.callback(error, { info: info });
         }
-        return winston.error("Error sending email ", { error: error, mailConfig: mail.config, mailOptions: mailOptions });
+        return winston.error("Error sending email ", { error: error, mailConfig: mail.config, mailOptions: { form: mailOptions.form, to: mailOptions.to } });
       }
       winston.verbose('Email sent:', { info: info });
       winston.debug('Email sent:', { info: info, mailOptions: mailOptions });
