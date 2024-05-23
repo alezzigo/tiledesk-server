@@ -8,4 +8,4 @@ Ticket number: #{{message.request.ticket_id}}
 
 Continue the conversation by chat here: {{seamlessPage}}{{tokenQueryString}}
 
-Powered by Tiledesk : https://tiledesk.com
+Powered by Gaincity Chatbot System : https://tiledesk.com
