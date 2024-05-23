@@ -13,6 +13,12 @@ class GcCustomNotifier {
                 if (colNames.length < 0) {
                     return
                 }
+
+                if (!userInputResult['userInputForm']) {
+                    return
+                }
+                winston.debug("gc-custom-notify userInputForm: " + userInputResult['userInputForm']);
+
                 const bodyCols = colNames.map(colName => userInputResult[colName]);
                 const csvStr = `${colNames.join(',')}\n ${bodyCols.join(',')}`
 
