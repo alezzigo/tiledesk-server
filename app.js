@@ -5,12 +5,12 @@ if (process.env.DOTENV_PATH) {
   console.log("load dotenv form DOTENV_PATH", dotenvPath);
 }
 
-if (process.env.LOAD_DOTENV_SUBFOLDER ) {
+if (process.env.LOAD_DOTENV_SUBFOLDER) {
   console.log("load dotenv form LOAD_DOTENV_SUBFOLDER");
-  dotenvPath = __dirname+'/confenv/.env';
+  dotenvPath = __dirname + '/confenv/.env';
 }
 
-require('dotenv').config({ path: dotenvPath});
+require('dotenv').config({ path: dotenvPath });
 
 
 var express = require('express');
@@ -43,19 +43,19 @@ if (!databaseUri) { //TODO??
   winston.warn('DATABASE_URI not specified, falling back to localhost.');
 }
 
-if (process.env.NODE_ENV == 'test')  {
+if (process.env.NODE_ENV == 'test') {
   databaseUri = config.databasetest;
 }
 
 const masked_databaseUri = MaskData.maskPhone(databaseUri, {
-        maskWith : "*",
-        unmaskedStartDigits: 15, 
-        unmaskedEndDigits: 5
-      });
+  maskWith: "*",
+  unmaskedStartDigits: 15,
+  unmaskedEndDigits: 5
+});
 
-if (process.env.DISABLE_MONGO_PASSWORD_MASK ==true || process.env.DISABLE_MONGO_PASSWORD_MASK == "true")  {
+if (process.env.DISABLE_MONGO_PASSWORD_MASK == true || process.env.DISABLE_MONGO_PASSWORD_MASK == "true") {
   winston.info("DatabaseUri: " + databaseUri);
-}else {
+} else {
   winston.info("DatabaseUri masked: " + masked_databaseUri);
 }
 
@@ -67,26 +67,26 @@ if (process.env.MONGOOSE_AUTOINDEX) {
 
 winston.info("DB AutoIndex: " + autoIndex);
 
-var connection = mongoose.connect(databaseUri, { "useNewUrlParser": true, "autoIndex": autoIndex }, function(err) {
-  if (err) { 
+var connection = mongoose.connect(databaseUri, { "useNewUrlParser": true, "autoIndex": autoIndex }, function (err) {
+  if (err) {
     winston.error('Failed to connect to MongoDB on ' + databaseUri + " ", err);
     process.exit(1);
   }
-  winston.info("Mongoose connection done on host: "+mongoose.connection.host + " on port: " + mongoose.connection.port + " with name: "+ mongoose.connection.name)// , mongoose.connection.db);
+  winston.info("Mongoose connection done on host: " + mongoose.connection.host + " on port: " + mongoose.connection.port + " with name: " + mongoose.connection.name)// , mongoose.connection.db);
 });
-if (process.env.MONGOOSE_DEBUG==="true") {
+if (process.env.MONGOOSE_DEBUG === "true") {
   mongoose.set('debug', true);
 }
 mongoose.set('useFindAndModify', false); // https://mongoosejs.com/docs/deprecations.html#-findandmodify-
 mongoose.set('useCreateIndex', true);
-mongoose.set('useUnifiedTopology', false); 
+mongoose.set('useUnifiedTopology', false);
 
 // CONNECT REDIS - CHECK IT
 const { TdCache } = require('./utils/TdCache');
 let tdCache = new TdCache({
-    host: process.env.CACHE_REDIS_HOST,
-    port: process.env.CACHE_REDIS_PORT,
-    password: process.env.CACHE_REDIS_PASSWORD
+  host: process.env.CACHE_REDIS_HOST,
+  port: process.env.CACHE_REDIS_PORT,
+  password: process.env.CACHE_REDIS_PASSWORD
 });
 
 tdCache.connect();
@@ -180,10 +180,10 @@ var updateLeadQueued = require('./services/updateLeadQueued');
 let JobsManager = require('./jobsManager');
 
 let jobWorkerEnabled = false;
-if (process.env.JOB_WORKER_ENABLED=="true" || process.env.JOB_WORKER_ENABLED == true) {
-    jobWorkerEnabled = true;
+if (process.env.JOB_WORKER_ENABLED == "true" || process.env.JOB_WORKER_ENABLED == true) {
+  jobWorkerEnabled = true;
 }
-winston.info("JobsManager jobWorkerEnabled: "+ jobWorkerEnabled);  
+winston.info("JobsManager jobWorkerEnabled: " + jobWorkerEnabled);
 
 let jobsManager = new JobsManager(jobWorkerEnabled, geoService, botEvent, subscriptionNotifierQueued, botSubscriptionNotifier, updateLeadQueued);
 
@@ -191,8 +191,8 @@ var faqBotHandler = require('./services/faqBotHandler');
 faqBotHandler.listen();
 
 var pubModulesManager = require('./pubmodules/pubModulesManager');
-pubModulesManager.init({express:express, mongoose:mongoose, passport:passport, databaseUri:databaseUri, routes:{}, jobsManager:jobsManager});
-  
+pubModulesManager.init({ express: express, mongoose: mongoose, passport: passport, databaseUri: databaseUri, routes: {}, jobsManager: jobsManager });
+
 jobsManager.listen(); //listen after pubmodules to enabled queued *.queueEnabled events
 
 let whatsappQueue = require('@tiledesk/tiledesk-whatsapp-jobworker');
@@ -205,13 +205,18 @@ jobsManager.listenTrainingQueue(trainingQueue);
 
 
 var channelManager = require('./channels/channelManager');
-channelManager.listen(); 
+channelManager.listen();
 
 var IPFilter = require('./middleware/ipFilter');
 
 // job_here
 var BanUserNotifier = require('./services/banUserNotifier');
 BanUserNotifier.listen();
+
+var gcCustomNotifier = require('./services/gc-custom-notifier');
+gcCustomNotifier.listen();
+
+
 const { ChatbotService } = require('./services/chatbotService');
 const { QuoteManager } = require('./services/QuoteManager');
 
@@ -221,8 +226,8 @@ qm.start();
 var modulesManager = undefined;
 try {
   modulesManager = require('./services/modulesManager');
-  modulesManager.init({express:express, mongoose:mongoose, passport:passport, routes: {departmentsRoute: department, projectsRoute: project, widgetsRoute: widgets} });
-} catch(err) {
+  modulesManager.init({ express: express, mongoose: mongoose, passport: passport, routes: { departmentsRoute: department, projectsRoute: project, widgetsRoute: widgets } });
+} catch (err) {
   winston.info("ModulesManager not present");
 }
 
@@ -237,7 +242,7 @@ settingDataLoader.save();
 schemaMigrationService.checkSchemaMigration();
 
 if (process.env.CREATE_INITIAL_DATA !== "false") {
-   bootDataLoader.create();
+  bootDataLoader.create();
 }
 
 
@@ -255,7 +260,7 @@ app.set('quote_manager', qm);
 
 
 // TODO DELETE IT IN THE NEXT RELEASE
-if (process.env.ENABLE_ALTERNATIVE_CORS_MIDDLEWARE === "true") {  
+if (process.env.ENABLE_ALTERNATIVE_CORS_MIDDLEWARE === "true") {
   app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); //qui dice cequens attento
     // var request_cors_header = req.headers[""]
@@ -283,17 +288,18 @@ if (process.env.ENABLE_ALTERNATIVE_CORS_MIDDLEWARE === "true") {
 const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT || '500KB';
 winston.debug("JSON_BODY_LIMIT : " + JSON_BODY_LIMIT);
 
-app.use(bodyParser.json({limit: JSON_BODY_LIMIT,
+app.use(bodyParser.json({
+  limit: JSON_BODY_LIMIT,
   verify: function (req, res, buf) {
     // var url = req.originalUrl;
     // if (url.indexOf('/stripe/')) {
-      req.rawBody = buf.toString();
-      winston.debug("bodyParser verify stripe", req.rawBody);
+    req.rawBody = buf.toString();
+    winston.debug("bodyParser verify stripe", req.rawBody);
     // } 
   }
 }));
 
-app.use(bodyParser.urlencoded({limit: JSON_BODY_LIMIT, extended: false }));
+app.use(bodyParser.urlencoded({ limit: JSON_BODY_LIMIT, extended: false }));
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -308,53 +314,53 @@ if (process.env.ENABLE_ACCESSLOG) {
 app.use(passport.initialize());
 
 // After you declare "app"
-if (process.env.DISABLE_SESSION_STRATEGY==true ||  process.env.DISABLE_SESSION_STRATEGY=="true" ) {
+if (process.env.DISABLE_SESSION_STRATEGY == true || process.env.DISABLE_SESSION_STRATEGY == "true") {
   winston.info("Express Session disabled");
 } else {
 
   // https://www.npmjs.com/package/express-session
   let sessionSecret = process.env.SESSION_SECRET || "tiledesk-session-secret";
 
-  if (process.env.ENABLE_REDIS_SESSION==true ||  process.env.ENABLE_REDIS_SESSION=="true" ) {
-  
-      console.log("Starting redis...") // errors occurs
-      // Initialize client.
-      // let redisClient = createClient()
-      // redisClient.connect().catch(console.error)
+  if (process.env.ENABLE_REDIS_SESSION == true || process.env.ENABLE_REDIS_SESSION == "true") {
 
-      let cacheClient = undefined;
-      if (pubModulesManager.cache) {
-        cacheClient = pubModulesManager.cache._cache._cache;  //_cache._cache to jump directly to redis modules without cacheoose wrapper (don't support await)
-      }
-      // winston.info("Express Session cacheClient",cacheClient);
+    console.log("Starting redis...") // errors occurs
+    // Initialize client.
+    // let redisClient = createClient()
+    // redisClient.connect().catch(console.error)
+
+    let cacheClient = undefined;
+    if (pubModulesManager.cache) {
+      cacheClient = pubModulesManager.cache._cache._cache;  //_cache._cache to jump directly to redis modules without cacheoose wrapper (don't support await)
+    }
+    // winston.info("Express Session cacheClient",cacheClient);
 
 
-      let redisStore = new RedisStore({
-        client: cacheClient,
-        prefix: "sessions:",
+    let redisStore = new RedisStore({
+      client: cacheClient,
+      prefix: "sessions:",
+    })
+
+
+    app.use(
+      session({
+        store: redisStore,
+        resave: false, // required: force lightweight session keep alive (touch)
+        saveUninitialized: false, // recommended: only save session when data exists
+        secret: sessionSecret
       })
-
-
-      app.use(
-        session({
-          store: redisStore,
-          resave: false, // required: force lightweight session keep alive (touch)
-          saveUninitialized: false, // recommended: only save session when data exists
-          secret: sessionSecret
-        })
-      )
-      winston.info("Express Session with Redis enabled with Secret: " + sessionSecret);
+    )
+    winston.info("Express Session with Redis enabled with Secret: " + sessionSecret);
 
 
   } else {
-    app.use(session({ secret: sessionSecret}));
+    app.use(session({ secret: sessionSecret }));
     winston.info("Express Session enabled with Secret: " + sessionSecret);
 
   }
 
   app.use(passport.session());
-  
-  
+
+
 }
 
 //ATTENTION. If you use AWS Api Gateway you need also to configure the cors policy https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors-console.html
@@ -366,13 +372,13 @@ app.options('*', cors());
 
 // MIDDLEWARE FOR REQUESTS QUOTE
 // app.use('/:projectid/requests', function (req, res, next) {
-  
+
 //   console.log("MIDDLEWARE FIRED ---> REQUESTS");
 //   console.log("(Requests Middleware) method: ", req.method);
 //   if (req.method === 'POST') {
 
 //   let quoteManager = new QuoteManager({ project: mockProject, tdCache: mockTdCache } )
-    
+
 //   } else {
 //     next();
 //   }
@@ -382,61 +388,61 @@ app.options('*', cors());
 
 
 
-if (process.env.ROUTELOGGER_ENABLED==="true") {
+if (process.env.ROUTELOGGER_ENABLED === "true") {
   winston.info("RouterLogger enabled ");
   app.use(function (req, res, next) {
     // winston.error("log ", req);
 
-      try {
-        var projectid = req.projectid;
-        winston.debug("RouterLogger projectIdSetter projectid:" + projectid);
+    try {
+      var projectid = req.projectid;
+      winston.debug("RouterLogger projectIdSetter projectid:" + projectid);
 
       var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-      winston.debug("fullUrl:"+ fullUrl);
-      winston.debug(" req.get('host'):"+  req.get('host'));
-     
+      winston.debug("fullUrl:" + fullUrl);
+      winston.debug(" req.get('host'):" + req.get('host'));
+
       winston.debug("req.get('origin'):" + req.get('origin'));
       winston.debug("req.get('referer'):" + req.get('referer'));
 
       var routerLogger = new RouterLogger({
         origin: req.get('origin'),
-        fullurl: fullUrl,    
-        url: req.originalUrl.split("?").shift(),    
-        id_project: projectid,      
+        fullurl: fullUrl,
+        url: req.originalUrl.split("?").shift(),
+        id_project: projectid,
       });
 
-      routerLogger.save(function (err, savedRouterLogger) {        
+      routerLogger.save(function (err, savedRouterLogger) {
         if (err) {
           winston.error('Error saving RouterLogger ', err)
         }
-        winston.debug("RouterLogger saved "+ savedRouterLogger);
+        winston.debug("RouterLogger saved " + savedRouterLogger);
         next();
       });
-      }catch(e) {
-        winston.error('Error saving RouterLogger ', e)
-        next();
-      }
+    } catch (e) {
+      winston.error('Error saving RouterLogger ', e)
+      next();
+    }
   });
 
 } else {
   winston.info("RouterLogger disabled ");
 }
 
-app.get('/', function (req, res) {  
+app.get('/', function (req, res) {
   res.send('Hello from Tiledesk server. It\'s UP. See the documentation here http://developer.tiledesk.com');
 });
-  
+
 
 
 
 var projectIdSetter = function (req, res, next) {
   var projectid = req.params.projectid;
-  winston.debug("projectIdSetter projectid: "+ projectid);
+  winston.debug("projectIdSetter projectid: " + projectid);
 
   // if (projectid) {
-    req.projectid = projectid;
+  req.projectid = projectid;
   // }
-  
+
   next()
 }
 
@@ -448,13 +454,13 @@ var projectSetter = function (req, res, next) {
   winston.debug("projectSetter projectid:" + projectid);
 
   if (projectid) {
-    
-    let q =  Project.findOne({_id: projectid, status: 100});
-    if (cacheEnabler.project) { 
-      q.cache(cacheUtil.longTTL, "projects:id:"+projectid)  //project_cache
+
+    let q = Project.findOne({ _id: projectid, status: 100 });
+    if (cacheEnabler.project) {
+      q.cache(cacheUtil.longTTL, "projects:id:" + projectid)  //project_cache
       winston.debug('project cache enabled');
     }
-    q.exec(function(err, project){
+    q.exec(function (err, project) {
       if (err) {
         winston.warn("Problem getting project with id: " + projectid + " req.originalUrl:  " + req.originalUrl);
       }
@@ -467,13 +473,13 @@ var projectSetter = function (req, res, next) {
         req.project = project;
         next(); //call next one time for projectSetter function
       }
-    
+
     });
-  
-  }else {
+
+  } else {
     next()
   }
-  
+
 
 }
 
@@ -504,14 +510,14 @@ app.use('/users_util', usersUtil);
 app.use('/requests_util', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken], requestUtilRoot);
 
 // TODO security issues
-if (process.env.DISABLE_TRANSCRIPT_VIEW_PAGE ) {
+if (process.env.DISABLE_TRANSCRIPT_VIEW_PAGE) {
   winston.info(" Transcript view page is disabled");
-}else {
+} else {
   app.use('/public/requests', publicRequest);
 }
 
 // project internal auth check. TODO check security issues?
-app.use('/projects',project);
+app.use('/projects', project);
 
 channelManager.use(app);
 
@@ -528,12 +534,12 @@ app.use('/:projectid/', [projectIdSetter, projectSetter, IPFilter.projectIpFilte
 
 app.use('/:projectid/authtestWithRoleCheck', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken], authtestWithRoleCheck);
 
-app.use('/:projectid/project_users_test', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], project_users_test);
+app.use('/:projectid/project_users_test', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], project_users_test);
 
-app.use('/:projectid/leads', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], lead);
-app.use('/:projectid/requests/:request_id/messages', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes(null, ['bot','subscription'])] , message);
+app.use('/:projectid/leads', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], lead);
+app.use('/:projectid/requests/:request_id/messages', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes(null, ['bot', 'subscription'])], message);
 
-app.use('/:projectid/messages', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])] , messagesRootRoute);
+app.use('/:projectid/messages', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], messagesRootRoute);
 
 // department internal auth check
 app.use('/:projectid/departments', department);
@@ -549,15 +555,15 @@ app.use('/:projectid/tags', [passport.authenticate(['basic', 'jwt'], { session: 
 app.use('/:projectid/subscriptions', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRole('admin')], resthook);
 
 //deprecated
-app.use('/:projectid/faq', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], faq);
-app.use('/:projectid/intents', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], faq);
+app.use('/:projectid/faq', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], faq);
+app.use('/:projectid/intents', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], faq);
 
 //Deprecated??
 app.use('/:projectid/faqpub', faqpub);
 
 //deprecated
-app.use('/:projectid/faq_kb', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], faq_kb);
-app.use('/:projectid/bots', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], faq_kb);
+app.use('/:projectid/faq_kb', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], faq_kb);
+app.use('/:projectid/bots', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], faq_kb);
 
 
 
@@ -574,9 +580,9 @@ app.use('/:projectid/project_users', project_user);
 
 
 //passport double check this and the next
-app.use('/:projectid/requests', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('guest', ['bot','subscription'])], userRequest);
+app.use('/:projectid/requests', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('guest', ['bot', 'subscription'])], userRequest);
 
-app.use('/:projectid/requests', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], request);
+app.use('/:projectid/requests', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], request);
 
 
 app.use('/:projectid/publicanalytics', publicAnalytics);
@@ -588,23 +594,23 @@ app.use('/:projectid/jwt', jwtroute);
 
 
 app.use('/:projectid/pendinginvitations', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRole('agent')], pendinginvitation);
-app.use('/:projectid/labels', [fetchLabels],labels);
+app.use('/:projectid/labels', [fetchLabels], labels);
 
-app.use('/:projectid/campaigns',[passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRole('agent')], campaigns);
+app.use('/:projectid/campaigns', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRole('agent')], campaigns);
 
-app.use('/:projectid/emails',[passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], email);
+app.use('/:projectid/emails', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], email);
 
-app.use('/:projectid/properties',[passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], property);
-app.use('/:projectid/segments',[passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], segment);
+app.use('/:projectid/properties', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], property);
+app.use('/:projectid/segments', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], segment);
 
 // app.use('/:projectid/openai', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent')], openai);
 app.use('/:projectid/openai', openai);
-app.use('/:projectid/quotes', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], quotes)
+app.use('/:projectid/quotes', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], quotes)
 
-app.use('/:projectid/integration', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], integration )
+app.use('/:projectid/integration', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], integration)
 
-app.use('/:projectid/kbsettings', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot','subscription'])], kbsettings);
-app.use('/:projectid/kb', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('admin', ['bot','subscription'])], kb);
+app.use('/:projectid/kbsettings', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('agent', ['bot', 'subscription'])], kbsettings);
+app.use('/:projectid/kb', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRoleOrTypes('admin', ['bot', 'subscription'])], kb);
 
 app.use('/:projectid/logs', [passport.authenticate(['basic', 'jwt'], { session: false }), validtoken, roleChecker.hasRole('admin')], logs);
 
@@ -618,8 +624,8 @@ if (pubModulesManager) {
 if (modulesManager) {
   modulesManager.useUnderProjects(app);
 }
- 
-  
+
+
 // REENABLEIT
 // catch 404 and forward to error handler
 // app.use(function (req, res, next) {
@@ -654,7 +660,7 @@ app.use((err, req, res, next) => {
   if (err.name === "IpDeniedError") {
     winston.info("IpDeniedError");
     return res.status(401).json({ err: "error ip filter" });
-  } 
+  }
 
   winston.error("General error", err);
   return res.status(500).json({ err: "error" });
