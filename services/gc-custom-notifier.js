@@ -22,7 +22,7 @@ const handleRequestCloseUserInputForm = (userInputResults) => {
     writeCSVFile(data.userInputs, csvOutput);
     winston.debug("gc-custom-notify write csv:" + csvOutput);
 
-    const templateExcelInput = 'C:\\Users\\vuminhdao\\source\\tiledesk\\tools\\templates\\Form10-template.xlsx';
+    const templateExcelInput = process.env.USER_INPUT_FORM_TEMPLATE_EXCEL;
     const excelOutput = generateFilepath(data.userPhone, data.date, 'xlsx');
     writeExcelFile(data.userInputs, templateExcelInput, excelOutput);
     winston.debug("gc-custom-notify write excel:" + excelOutput);
