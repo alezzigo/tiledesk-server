@@ -1,4 +1,4 @@
-const whatsapp = require("@tiledesk/tiledesk-whatsapp-connector");
+const whatsapp = require("@vmdao/tiledesk-whatsapp-connector");
 var winston = require('../../config/winston');
 var configGlobal = require('../../config/global');
 const mongoose = require("mongoose");

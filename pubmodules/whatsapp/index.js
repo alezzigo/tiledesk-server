@@ -1,6 +1,6 @@
 const listener = require("./listener");
 
-const whatsapp = require("@tiledesk/tiledesk-whatsapp-connector");
+const whatsapp = require("@vmdao/tiledesk-whatsapp-connector");
 const whatsappRoute = whatsapp.router;
 
 

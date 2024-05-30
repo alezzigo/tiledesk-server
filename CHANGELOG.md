@@ -298,7 +298,7 @@
 - close chat set timeout for performance
 
 # 2.4.29
-- @tiledesk/tiledesk-whatsapp-connector 0.1.50
+- @vmdao/tiledesk-whatsapp-connector 0.1.50
 
 # 2.4.28
 - smartAssignment default value condition for channels
@@ -378,7 +378,7 @@
 - skip has role verification for admin@td user
 - bot websocket realtime endpoint
 - added properties to lead model and patch endpoint
-- @tiledesk/tiledesk-whatsapp-connector 0.1.46
+- @vmdao/tiledesk-whatsapp-connector 0.1.46
 
 # 2.4.8
 - added webp image
