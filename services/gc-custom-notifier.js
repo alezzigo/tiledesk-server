@@ -14,15 +14,15 @@ const handleRequestClose = async (data) => {
   if (!userInputResults["userInputForm"]) {
     return;
   }
-  winston.debug(
+  winston.info(
     "gc-custom-notify userInputForm: " + userInputResults["userInputForm"]
   );
 
-  if (userInputResults["userInputForm"] === "FORM10)") {
+  if (userInputResults["userInputForm"] === "FORM10") {
     await handleRequestCloseUserInputForm10(userInputResults);
   }
 
-  if (userInputResults["userInputForm"] === "JOB_FORM)") {
+  if (userInputResults["userInputForm"] === "JOB_FORM") {
     await handleRequestCloseUserInputJobForm(userInputResults);
   }
 };
@@ -42,17 +42,17 @@ const handleRequestCloseUserInputForm10 = (userInputResults) => {
 
 const handleRequestCloseUserInputJobForm = (userInputResults) => {
   const data = prepareJobValidData(userInputResults);
+
   var gcJob = new GCJobSchema(data);
   return gcJob
     .save()
     .then((res) => {
       console.log(res);
+      winston.debug("gc-custom-notify saved");
     })
     .catch((err) => {
       winston.error("--- > ERROR ", err);
     });
-
-  winston.debug("gc-custom-notify saved");
 };
 
 const generateFilepath = (subfix, date, ext) => {
@@ -75,7 +75,7 @@ const generateFilepath = (subfix, date, ext) => {
 const prepareJobValidData = (data) => {
   const teamCode = data?.userInputTeamCode;
   const jobCode = data?.userInputJobCode;
-  const media = [data?.userInputPictureUrl];
+  const media = data?.userInputMedia;
 
   return {
     teamCode,
