@@ -43,7 +43,7 @@ const handleRequestCloseUserInputForm10 = (userInputResults) => {
 const handleRequestCloseUserInputJobForm = (userInputResults) => {
   const data = prepareJobValidData(userInputResults);
   var gcJob = new GCJobSchema(data);
-  gcJob
+  return gcJob
     .save()
     .then((res) => {
       console.log(res);
@@ -75,7 +75,7 @@ const generateFilepath = (subfix, date, ext) => {
 const prepareJobValidData = (data) => {
   const teamCode = data?.userInputTeamCode;
   const jobCode = data?.userInputJobCode;
-  const media = data?.userInputMedia;
+  const media = [data?.userInputPictureUrl];
 
   return {
     teamCode,
