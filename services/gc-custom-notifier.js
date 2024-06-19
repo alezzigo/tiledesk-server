@@ -75,7 +75,7 @@ const generateFilepath = (subfix, date, ext) => {
 const prepareJobValidData = (data) => {
   const teamCode = data?.userInputTeamCode;
   const jobCode = data?.userInputJobCode;
-  const media = data?.userInputMedia;
+  const media = [data?.userInputPictureUrl];
 
   return {
     teamCode,
