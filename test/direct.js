@@ -18,7 +18,7 @@ const handleRequestCloseUserInputJobForm = (userInputResults) => {
 const prepareJobValidData = (data) => {
   const teamCode = data?.userInputTeamCode;
   const jobCode = data?.userInputJobCode;
-  const media = data?.userInputMedia;
+  const media = [data?.lastUserImageURL];
 
   return {
     teamCode,
