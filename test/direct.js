@@ -18,7 +18,7 @@ const handleRequestCloseUserInputJobForm = (userInputResults) => {
 const prepareJobValidData = (data) => {
   const teamCode = data?.userInputTeamCode;
   const jobCode = data?.userInputJobCode;
-  const media = [data?.userInputPictureUrl];
+  const media = data?.userInputPictureUrl;
 
   return {
     teamCode,
@@ -35,7 +35,7 @@ mongoose
       userInputForm: "JOBFORM",
       userInputTeamCode: "T3122",
       userInputJobCode: "J12312",
-      userInputPictureUrl: "m12312.jpg",
+      userInputPictureUrl: "m12312.jpg,asd",
       userPhone: "9111111",
     })
       .then((res) => console.log(res))

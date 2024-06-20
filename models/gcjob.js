@@ -13,13 +13,12 @@ var GCJobSchema = new Schema(
       required: false,
     },
     media: {
-      type: Array,
-      default: [],
+      type: String,
+      default: null,
     },
     status: {
       type: String,
       default: "Waiting",
-      required: true,
       index: true,
     },
     createdBy: {
