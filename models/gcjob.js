@@ -12,7 +12,11 @@ var GCJobSchema = new Schema(
       type: String,
       required: false,
     },
-    media: {
+    files: {
+      type: Array,
+      default: [],
+    },
+    description: {
       type: String,
       default: null,
     },

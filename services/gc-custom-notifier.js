@@ -23,7 +23,11 @@ const handleRequestClose = async (data) => {
   }
 
   if (userInputResults["userInputForm"] === "JOB_FORM") {
-    await handleRequestCloseUserInputJobForm(userInputResults);
+    try {
+      await handleRequestCloseUserInputJobForm(userInputResults);
+    } catch (e) {
+      winston.error(e);
+    }
   }
 };
 
@@ -41,7 +45,9 @@ const handleRequestCloseUserInputForm10 = (userInputResults) => {
 };
 
 const handleRequestCloseUserInputJobForm = (userInputResults) => {
+  console.log("handleRequestCloseUserInputJobForm", userInputResults);
   const data = prepareJobValidData(userInputResults);
+  console.log("data", data);
 
   var gcJob = new GCJobSchema(data);
   return gcJob
@@ -75,12 +81,23 @@ const generateFilepath = (subfix, date, ext) => {
 const prepareJobValidData = (data) => {
   const teamCode = data?.userInputTeamCode;
   const jobCode = data?.userInputJobCode;
-  const media = data?.userInputPictureUrl;
+  const userInputFiles = data?.userInputFiles || "";
+  const files = userInputFiles
+    .split(",")
+    .filter((f) => f)
+    .map((f) => {
+      const [url, caption] = f.split("::");
+      return {
+        url,
+        caption,
+      };
+    });
 
   return {
     teamCode,
     jobCode,
-    media,
+    files,
+    description: userInputFiles,
   };
 };
 
