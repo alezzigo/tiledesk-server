@@ -1,8 +1,15 @@
 var winston = require("../config/winston");
 const requestEvent = require("../event/requestEvent");
 const requestService = require("./requestService");
-const { writeFileSync } = require("fs");
+const { writeFileSync, readFileSync } = require("fs");
 const ExcelJS = require("exceljs");
+const {
+  TemplateHandler,
+  MimeType,
+  createDefaultPlugins,
+} = require("easy-template-x");
+const { createResolver } = require("easy-template-x-angular-expressions");
+
 const { get } = require("axios");
 const sizeOf = require("buffer-image-size");
 const GCJobSchema = require("../models/gcjob");
@@ -38,10 +45,15 @@ const handleRequestCloseUserInputForm10 = (userInputResults) => {
   writeCSVFile(data.userInputs, csvOutput);
   winston.debug("gc-custom-notify write csv:" + csvOutput);
 
-  const templateExcelInput = process.env.USER_INPUT_FORM_TEMPLATE_EXCEL;
-  const excelOutput = generateFilepath(data.userPhone, data.date, "xlsx");
-  writeExcelFile(data.userInputs, templateExcelInput, excelOutput);
-  winston.debug("gc-custom-notify write excel:" + excelOutput);
+  // const templateExcelInput = process.env.USER_INPUT_FORM_TEMPLATE_EXCEL;
+  // const excelOutput = generateFilepath(data.userPhone, data.date, "xlsx");
+  // writeExcelFile(data.userInputs, templateExcelInput, excelOutput);
+
+  const templateWordFileInput = process.env.USER_INPUT_FORM_TEMPLATE_WORD;
+  const wordFileOutput = generateFilepath(data.userPhone, data.date, "docx");
+  writeWordFile(data.userInputs, templateWordFileInput, wordFileOutput);
+
+  winston.debug("gc-custom-notify write to template:" + wordFileOutput);
 };
 
 const handleRequestCloseUserInputJobForm = (userInputResults) => {
@@ -182,6 +194,28 @@ const writeExcelFile = async (data, input, output) => {
   }
 
   workbook.xlsx.writeFile(output);
+};
+
+const writeWordFile = async (data, input, output) => {
+  const templateFile = readFileSync(input);
+  const handler = new TemplateHandler({
+    plugins: createDefaultPlugins(),
+    scopeDataResolver: createResolver({
+      angularFilters: {
+        upper: (input) => (input || "").toUpperCase(),
+        lower: (input) => (input || "").toLowerCase(),
+        date: (input) => {
+          try {
+            return new Date(input || "").toISOString();
+          } catch (error) {
+            return "";
+          }
+        },
+      },
+    }),
+  });
+  const doc = await handler.process(templateFile, data);
+  writeFileSync(output, doc);
 };
 
 class GcCustomNotifier {
