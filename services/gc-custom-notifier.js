@@ -1,11 +1,10 @@
-var winston = require("../config/winston");
+const winston = require("../config/winston");
 const requestEvent = require("../event/requestEvent");
 const requestService = require("./requestService");
 const { writeFileSync, readFileSync } = require("fs");
 const ExcelJS = require("exceljs");
 const {
   TemplateHandler,
-  MimeType,
   createDefaultPlugins,
 } = require("easy-template-x");
 const { createResolver } = require("easy-template-x-angular-expressions");
